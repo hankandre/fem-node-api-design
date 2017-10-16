@@ -1,15 +1,18 @@
-import express from 'express'
-import userController from './user.controller'
+import express from 'express';
 
-export const userRouter = express.Router()
+import userController from './user.controller';
 
-userRouter.param('id', userController.findByParam)
+export const userRouter = express.Router();
 
-userRouter.route('/')
+userRouter.param('id', userController.findByParam);
+
+userRouter
+  .route('/')
   .get(userController.getAll)
-  .post(userController.createOne)
+  .post(userController.createOne);
 
-userRouter.route('/:id')
+userRouter
+  .route('/:id')
   .get(userController.getOne)
   .put(userController.updateOne)
-  .delete(userController.createOne)
+  .delete(userController.createOne);

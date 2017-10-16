@@ -1,20 +1,23 @@
-import express from 'express'
-import setupMiddware from './middleware'
-import { restRouter } from './api'
-import { connect } from './db'
-import { signin, protect } from './api/modules/auth'
-// Declare an app from express
-const app = express()
+import express from 'express';
 
-setupMiddware(app)
-connect()
+import { restRouter } from './api';
+import { signin } from './api/modules/auth';
+import { connect } from './db';
+import setupMiddware from './middleware';
+
+// Declare an app from express
+const app = express();
+
+setupMiddware(app);
+connect();
 // setup basic routing for index route
 
-app.use('/signin', signin)
+app.use('/api', restRouter);
+app.use('/signin', signin);
 
 // catch all
 app.all('*', (req, res) => {
-  res.json({ok: true})
-})
+  res.json({ fallthrough: true });
+});
 
-export default app
+export default app;
