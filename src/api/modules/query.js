@@ -30,38 +30,54 @@ export const controllers = {
 export const createOne = model => (req, res, next) => {
   return controllers
     .createOne(model, req.body)
-    .then(result => res.status(201).json(result))
+    .then(doc => res.status(201).json(doc))
     .catch(err => res.status(500).send('You broke it'));
 };
 
 export const updateOne = model => async (req, res, next) => {
+  const docToUpdate = req.docFromId;
+  const update = req.body;
   return controllers
-    .updateOne(model, req.body)
-    .then(result => res.json(result))
+    .updateOne(docToUpdated, update)
+    .then(doc => res.json(doc))
     .catch(err => res.status(500).send('error updating'));
 };
 
-export const deleteOne = model => (req, res, next) => {};
+export const deleteOne = model => (req, res, next) => {
+  const docToDelete = req.docFromId;
+
+  return controllers
+    .deleteOne(req.docFromId)
+    .then(doc => res.status(200).json(doc))
+    .catch(err => next(err));
+};
 
 export const getOne = model => (req, res, next) => {
   return controllers
-    .getOne(req.params.id)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err));
+    .getOne(req.docFromId)
+    .then(doc => res.json(doc))
+    .catch(err => next(err));
 };
 
 export const getAll = model => (req, res, next) => {
   return controllers
     .getAll(model)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
+    .then(docs => res.json(docs))
+    .catch(err => next(err.message));
 };
 
 export const findByParam = model => (req, res, next, id) => {
   return controllers
     .findByParam(model, id)
-    .then(result => next(result))
-    .catch(err => res.status(500).send(err.message));
+    .then(doc => {
+      if (doc === undefined) {
+        next(new Error('Document not found'));
+      } else {
+        req.docFromId = id;
+        next();
+      }
+    })
+    .catch(err => next(err));
 };
 
 export const generateControllers = (model, overrides = {}) => {
